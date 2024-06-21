@@ -1,18 +1,24 @@
-const baseurl =process.env.REACT_APP_BASE_URL;
-console.log({baseurl});
+const baseurl = process.env.REACT_APP_BASE_URL;
+console.log({ baseurl });
 
-export const login = async({username, password}) =>{
-    try{
-        const response = await fetch (`${baseurl}/auth/login`,{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
+export const login = async ({ username, password }) => {
+    try {
+        const response = await fetch(`${baseurl}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             },
-            body:JSON.stringify({username,password})
-        })
-        return response.json()
+            body: JSON.stringify({ username, password })
+        });
+
+        if (!response.ok) {
+            const errorDetails = await response.json();
+            return { success: false, message: errorDetails.message || 'Login failed' };
+        }
+
+        const result = await response.json();
+        return { success: true, data: result };
+    } catch (error) {
+        return { success: false, message: `Error during login: ${error.message}` };
     }
-    catch(error){
-        return `Error during login:${error.message}`;
-    }
-}
+};
